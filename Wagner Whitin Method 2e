@@ -1,0 +1,54 @@
+class WagnerWithin():
+    def __init__(self):
+        pass
+
+    def run(self, dict_in, demand):
+        # Füllen der Variablen aus Start_Dictionary
+        dem = demand
+        fixedCost = dict_in["fixedCost"]
+        varCost = dict_in["varCost"]
+        anzPeriode = len(dem) #dict_in["planningPeriod"]
+        orders = [0 for i in range(0, anzPeriode)]
+        minlist = []
+        wlist = []
+        total_c = 0
+
+        for p in range(0,anzPeriode):
+            if p == 0:
+                first = [p, p, fixedCost]
+            else:
+                first = [p, p, fixedCost + lastmin]
+            value = first[2]
+            plist=[first]
+            for i in range(p+1, anzPeriode):
+                value += dem[i] * (i - p) * varCost
+                plist.append([i, p, value])
+            wlist.append(plist)
+            mini = [0, 0, float("inf")]
+            for list in wlist:
+                for period in list:
+                    if period[0] == p:
+                        if period[2] < mini[2]:
+                            mini = period
+                            lastmin = mini[2]
+            minlist.append(mini)
+        for element in minlist:
+            orders[element[1]] += dem[element[0]]
+            total_c = element[2]
+        output = {"WW": "", "total_cost": total_c, "orders": orders}
+        return output
+if __name__ == "__main__":
+    #static test dictionary
+    dict_in = {
+    # Liste mit Nachfragen pro Periode
+        "planningPeriod": 10,   # Anzahl der Perioden
+        "fixedCost": 100,       # Bestellkosten
+        "varCost": 1         # Lagerhaltungssatz
+    }
+    #demand = [3834, 11625, 6022, 6103, 3533, 4046, 3044, 3023, 4064, 9552, 3960, 5077, 1807, 30]
+    #demand = [20, 50, 10, 50, 50, 10, 20, 40, 20, 30]
+    #demand = [300, 344, 6022, 470, 3533, 40465]
+    demand = [40, 50, 10, 20, 30, 40, 20, 25]
+    ww = WagnerWithin()
+    output = ww.run(dict_in, demand)
+    print(output)
