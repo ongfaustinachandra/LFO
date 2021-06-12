@@ -1,0 +1,91 @@
+#Wagner Whitin Optimierungsmethode
+
+import numpy as np
+#from argparse import ArgumentParser
+
+#  get the periods which needs to order
+def find_order_periods(order_matrix, anzPeriode):
+    order_periods = []
+    order_periods.append(0)
+    try:
+        next = order_matrix[0][anzPeriode - 1][1]
+        order_periods.append(next)
+        while (len(order_matrix[next][anzPeriode - 1]) == 2):
+            order_periods.append(order_matrix[next][anzPeriode - 1][1])
+            next = order_matrix[next][anzPeriode - 1][1]
+    except IndexError:
+        order_periods = [0]
+    return order_periods
+
+def get_order_amount(order_periods, demand) :
+    order = [0 for i in range(0, len(demand))]
+    for i, num in enumerate(order_periods) :
+        order[num] = sum(demand[num :order_periods[i + 1]]) if (i + 1 < len(order_periods)) else sum(
+            demand[num :len(demand)])
+    return order
+
+#def create_cli_parser(self) :
+#    """
+#    Creates a command line interface parser.
+#    """
+#    cli_parser = ArgumentParser(description=__doc__)
+#    cli_parser.add_argument('fcost', default="10", type=float,
+#                            help="The fixed ordering cost")
+#    cli_parser.add_argument('hcost', default="3", type=float,
+#                            help="The holding cost")
+#    cli_parser.add_argument('demands', nargs='+', type=int,
+#                            help="Demands during each period")
+#    return cli_parser
+
+class WagnerWhitin():
+    def __init__(self):
+        pass
+
+    def run(self, dict_in, demand):
+        order = []  # optimal order of purchase at each period
+        varCost = dict_in["varCost"]
+        fixedCost = dict_in["fixedCost"]
+        demand = np.array(demand)
+        anzPeriode = len(demand)
+        cost = [[0 for i in range(0, anzPeriode)] for j in range(0, anzPeriode)]
+        for i in range(0, anzPeriode):
+            for j in range(i, anzPeriode):
+                cost[i][j] += fixedCost
+                for k in range(i + 1, (j + 1)):
+                    cost[i][j] += varCost * (k - i) * demand[k]
+
+        #  initializing the optimal order cost within the period i, j
+        F = [[0 for i in range(0, anzPeriode)] for j in range(0, anzPeriode)]
+        order_m = [[[j] for i in range(0, anzPeriode)] for j in range(0, anzPeriode)]
+
+        for j in range(0, anzPeriode):
+            for i in range(0, j + 1):
+                F[j - i][j] = cost[j - i][j]
+                for k in range(j - i, j):
+                    if (cost[j - i][k] + F[k + 1][j] < F[j - i][j]):
+                        F[j - i][j] = cost[j - i][k] + F[k + 1][j]
+                        order_m[j - i][j] = [j - i, k + 1]
+        order_periods = find_order_periods(order_m, len(demand))
+        if len(demand) == 0:
+            output = np.array([0])
+        else:
+            output = np.array(get_order_amount(order_periods, demand))
+        return output
+
+if __name__ == "__main__":
+    # static test dictionary
+    dict_in = {
+        #"planningPeriod": 10,  # Anzahl der Perioden
+        "fixedCost": 100,  # Bestellkosten
+        "varCost": 1,  # Lagerhaltungssatz
+        #"roll": 4
+    }
+    #demand = [0, 0, 6022, 6103, 3533, 4046, 3044, 3023, 4064, 9552, 3960, 5077, 1807, 30]
+    #demand = [300, 344, 6022, 470, 3533, 40465]
+    #demand = [3834, 11625, 6022, 6103, 3533, 4046, 3044, 3023, 4064, 9552, 3960, 5077, 1807, 30]
+    #demand = [0, 0, 6022, 6103, 3533, 4046, 3044, 3023, 4064, 9552, 3960, 5077, 4000, 4000, 3430, 300,3400,3440,200,3400,9400,4340,3400,300, 3040,4000, 5000,6500,45454,4443,3244,2334,344,3223,2999,4000,4000,4000,3400,3400,3444,5006,4500,400,4500,3400,5400,0,0,0,4500,4500,4400,555,4540,0,0,4555,3000,4555,455,3444,4333,2344,4454,4555,3444]
+    #demand = [20, 50, 10, 50, 50, 10, 20, 40,20, 30]
+    demand = [40, 50, 10, 20, 30, 40, 20, 25]
+    ww = WagnerWhitin()
+    output = ww.run(dict_in, demand)
+    print(output)
