@@ -1,0 +1,89 @@
+import numpy as np
+
+class WagnerWhitin():
+    def __init__(self):
+        pass
+
+    def run(self, dict_in, demand):
+        #Variablen definieren
+        varKosten = dict_in["varCost"]
+        fixKosten = dict_in["fixedCost"]
+        bestellung = np.array(demand)   #Liste von den Bestellungen
+        anzPeriode = len(demand)        #Anzahl der Periode
+        minKosten = 0                     #Minimale Kosten
+        kosten = [[0 for i in range(0, anzPeriode)] for j in range(0, anzPeriode)] #Kostenmatrix
+        minListe = [0 for i in range(0, anzPeriode)] #liste von den minimalen Kosten je Periode
+        periodeListe = []    #liste von den Bestellperioden
+        bestellteMenge = [0 for i in range(0, anzPeriode)]  #Liste von den bestellten Mengen je Bestellperiode
+        nullbestellung = 0  #Index, an welchen die Bestellungen null sind
+
+        #aussuchen der Null Bestellungen
+        for i in range(0, anzPeriode):
+            if bestellung[i] == 0:
+                nullbestellung = i
+
+        #Beginn der Schleife von Kostenmatrix
+        for i in range(0, anzPeriode):
+            if bestellung[i] > 0:
+                for j in range(i, anzPeriode):
+                    kosten[j][i] += fixKosten + minKosten
+                    for k in range(i + 1, j + 1):
+                        kosten[j][i] += varKosten * (k - i) * bestellung[k]
+                minKosten = min(filter(None, kosten[i]))
+                minListe[i] = minKosten
+            else:
+                i += 1
+
+        #Rückwarts Schleife, Aussuchen der Bestellperiode
+        periode = anzPeriode
+        while periode != 0 and (periode-1) > nullbestellung:
+            index = kosten[periode-1].index(minListe[periode-1])
+            periodeListe.insert(0, index)
+            periode = index
+            if periode == 0:
+                break
+
+        #Berechnung der bestellten Mengen je Bestellperiode
+        anzBestellperiode = len(periodeListe)
+        j = 0
+        for i in range (0, anzBestellperiode):
+            j = periodeListe[i]
+            if i < (anzBestellperiode-1):
+                for j in range(j, periodeListe[i+1]):
+                    bestellteMenge[periodeListe[i]] += bestellung[j]
+            else:
+                for j in range(j, anzPeriode):
+                    bestellteMenge[periodeListe[i]] += bestellung[j]
+
+        #Berechnung Bestellperiode + 1
+        for i in range(0, len(periodeListe)):
+            periodeListe[i] = periodeListe[i] + 1
+
+        #Definieren der Output Array
+        if len(demand) == 0 or bestellung.max() == 0:
+            output = np.array([0])
+        else:
+            output = {"total_cost": np.array(kosten),
+                      "minimal": minListe,
+                      "Bestellperiode": periodeListe,
+                      "bestellte Mengen": bestellteMenge,
+                      "minimale Kosten": minKosten}
+            #output = bestellteMenge
+        return output
+
+
+if __name__ == "__main__":
+    # static test dictionary
+    dict_in = {
+        "fixedCost": 100,  # Bestellkosten
+        "varCost": 1,  # Lagerhaltungssatz
+    }
+    #demand = [40, 50, 10, 20, 30, 40, 20, 25]
+    demand = [0, 0, 0, 10, 0, 1 ]
+    #demand = [20, 50, 10, 50, 50, 10, 20, 40, 20, 30]
+    #demand = [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+    #demand = [0, 0, 1]
+
+    ww = WagnerWhitin()
+    output = ww.run(dict_in, demand)
+    print(output)
