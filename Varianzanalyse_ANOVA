@@ -1,0 +1,13 @@
+#https://www.youtube.com/watch?v=AhZ-hllEVxs&t=456s
+
+import pandas as pd
+import statsmodels.api as sm
+from statsmodels.formula.api import ols
+
+df = pd.read_csv('.../Analysis of Variance/Test_Results.csv',delimiter=";", encoding='unicode_escape')
+df = df.dropna()
+
+model = ols('Wagner_Within~Servicegrad+Prognosefehler+Bestellkosten+WBZ', data=df).fit()
+
+aov = sm.stats.anova_lm(model, type=2)
+print(aov)
