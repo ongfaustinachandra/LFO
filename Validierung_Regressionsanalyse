@@ -1,0 +1,33 @@
+#https://realpython.com/linear-regression-in-python/#linear-regression
+
+import statsmodels.api as sm
+import pandas as pd
+import joblib
+
+data = pd.read_csv('../Analysis of Variance/Test_Result.csv', delimiter=";", encoding='unicode_escape')
+data = data.dropna()
+
+x = data["Servicegrad"]
+y = data["Wagner"]
+
+model = sm.OLS(y, x).fit()
+predictions = model.predict(x) #make the predictions by the model
+
+#print out the statistics
+print(model.summary())
+
+
+#saving model
+filename = '../Analysis of Variance/Validierung_Regression_Statsmodels_Result.sav'
+joblib.dump(model, filename)
+
+#..
+#..
+#..
+#nach späterem Zeitpunkt
+#..
+#..
+#loading model
+filename = '../Analysis of Variance/Validierung_Regression_Statsmodels_Result.sav'
+loaded = joblib.load(filename)
+print(loaded.summary())
