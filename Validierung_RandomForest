@@ -61,7 +61,7 @@ sns.set(font_scale=1.4)
 sns.heatmap(matrix, annot=True, annot_kws={'size':10}, cmap=plt.cm.Greens, linewidths=0.2)
 
 #add labels to the plot
-class_names = ['PP', 'WW', 'Groff', 'SM', 'SM, Groff, PP', 'SM, Groff, PP, WW', 'Groff, PP',
+class_names = ['LUC', 'PP', 'WW', 'Groff', 'SM', 'SM, Groff, PP', 'SM, Groff, PP, WW', 'Groff, PP',
                'SM, Groff', 'SM, PP', 'Groff, PP, WW', 'PP, WW', 'SM, Groff, WW', 'Groff, WW', 'SM, WW']
 tick_marks = np.arange(len(class_names))
 tick_marks2= tick_marks + 0.5
