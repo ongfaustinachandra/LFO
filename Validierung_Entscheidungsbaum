@@ -14,8 +14,7 @@ from sklearn.tree import DecisionTreeClassifier # Import Decision Tree Classifie
 from sklearn.model_selection import train_test_split # Import train_test_split function
 from sklearn import metrics #Import scikit-learn metrics module for accuracy calculation
 
-df = pd.read_csv('E:/Users/Faustina Chandra/Documents/3_WHK_LFO_Matthias/Research_ForecastError/Validierung'
-                 '/Clustering/Rohdaten_Gesamtkosten_Rang_WW-Groff.csv', delimiter=";", encoding='unicode_escape')
+df = pd.read_csv('../Clustering/Rohdaten_Gesamtkosten_Rang_WW-Groff.csv', delimiter=";", encoding='unicode_escape')
 
 #split dataset in features and target variables
 feature_cols = ['Servicegrad', 'Prognosefehler', 'Bestellkosten', 'WBZ']
