@@ -1,0 +1,77 @@
+#https://medium.com/analytics-vidhya/evaluating-a-random-forest-model-9d165595ad56#id_token=eyJhbGciOiJSUzI1NiIsImtpZCI6ImFkZDhjMGVlNjIzOTU0NGFmNTNmOTM3MTJhNTdiMmUyNmY5NDMzNTIiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJuYmYiOjE2MzQ4MDIwNjQsImF1ZCI6IjIxNjI5NjAzNTgzNC1rMWs2cWUwNjBzMnRwMmEyamFtNGxqZGNtczAwc3R0Zy5hcHBzLmdvb2dsZXVzZXJjb250ZW50LmNvbSIsInN1YiI6IjExMjY5NzU1NTYzNTIwODMzMDE1MiIsImVtYWlsIjoiZmF1c3RpbmEuY2hhbmRyYUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiYXpwIjoiMjE2Mjk2MDM1ODM0LWsxazZxZTA2MHMydHAyYTJqYW00bGpkY21zMDBzdHRnLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwibmFtZSI6Ik9uZyBGYXVzdGluYSBDaGFuZHJhIiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hLS9BT2gxNEdpSkZyanY4ZVg0OHUzZUdlSWtqYllvYXcxSWp2VXFVeTBmTFhTRUt3PXM5Ni1jIiwiZ2l2ZW5fbmFtZSI6Ik9uZyBGYXVzdGluYSIsImZhbWlseV9uYW1lIjoiQ2hhbmRyYSIsImlhdCI6MTYzNDgwMjM2NCwiZXhwIjoxNjM0ODA1OTY0LCJqdGkiOiI5M2VjYzQ2OTA3YWEwZTkyZmZkNWJkN2FjOTUyNmRkODhmNjMwZDc1In0.dyj2liUspOYGnlRhjT0axLgm3A2Nzz22jxeZEaSYChjp4imYkPfGjMS-CUtHYRCb6gRpnns9OAV2Jgq3o_oJMkD0msXuVGiLy7DLqbmnJO6BnkudfyWl5g5S_lX5CcFPcD_OM_WKBeA_adZSLSLcs-xVkzacZ8n9lp7dj7XYeF4LYhbdJw16cqOa4UCABQYdnSGsDUWgrCRk7JrMJva9J90B3UNwMzLVsxf2FzKGyBTwEmRqxdJoFNMxASfomWmAzgXW8JAmrp5e8W18sNdAFJuF9y6LcTMOWLy_a2i66Zw1EsdHtj7FROAY0Jz2kGQmetiuZnjp-C1mN4Raiby7Zw
+
+#import needed packages
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+
+#adjust console width
+pd.set_option('display.width', 500)
+np.set_printoptions(linewidth=300)
+
+#import the dataset
+df = pd.read_csv('E:/Users/Faustina Chandra/Documents/3_WHK_LFO_Matthias/Research_ForecastError/Validierung'
+                 '/Clustering/Rohdaten_Gesamtkosten_Rang.csv', delimiter=";", encoding='unicode_escape')
+
+#split dataset into features and target (independent and dependent variable)
+y = df['beste_Methode']
+X = df[['Servicegrad', 'Bestellkosten', 'WBZ']]
+#without: DGP, Prognosefehler
+#DGP: non metric, Prognosefehler: comma
+
+#print(y.head())
+#print(X.head())
+
+print('Value count: ', y.value_counts())
+#Note: these clases are not balanced
+
+#Split features and target into train and test sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=1, stratify=y)
+#random_state=1 means same input, same output
+#stratify=y tells train_test_split to make sure that the training and test datasets contain examples of each class
+
+#Instantiate the fit and the RandomForestClassifier
+forest = RandomForestClassifier()
+forest.fit(X_train, y_train)
+
+#make a prediction for the test set
+y_pred_test = forest.predict(X_test)
+print('y predicted test: ', y_pred_test)
+
+#view accuracy score
+acc_score = accuracy_score(y_test, y_pred_test)
+print('accuracy score: ', acc_score)
+
+#view confusion matrix
+conf_matrix = confusion_matrix(y_test, y_pred_test)
+print('confustion matrix: \n', conf_matrix)
+
+#using seaborn heatmap to map the data
+#get and reshape the confusion matrix data
+matrix = confusion_matrix(y_test, y_pred_test)
+matrix = matrix.astype('float') / matrix.sum(axis=1) [:, np.newaxis]
+
+#Build the plot
+plt.figure(figsize=(20, 10))
+sns.set(font_scale=1.4)
+sns.heatmap(matrix, annot=True, annot_kws={'size':10}, cmap=plt.cm.Greens, linewidths=0.2)
+
+#add labels to the plot
+class_names = ['PP', 'WW', 'Groff', 'SM', 'SM, Groff, PP', 'SM, Groff, PP, WW', 'Groff, PP',
+               'SM, Groff', 'SM, PP', 'Groff, PP, WW', 'PP, WW', 'SM, Groff, WW', 'Groff, WW', 'SM, WW']
+tick_marks = np.arange(len(class_names))
+tick_marks2= tick_marks + 0.5
+plt.xticks(tick_marks, class_names, rotation=25)
+plt.yticks(tick_marks2, class_names, rotation=0)
+plt.xlabel('Predicted Label')
+plt.ylabel('True Label')
+plt.title('Confusion Matrix for Random Forest Model')
+plt.show()
+
+#classification report for test data and predictions
+print(classification_report(y_test, y_pred_test))
