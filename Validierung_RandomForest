@@ -15,8 +15,7 @@ pd.set_option('display.width', 500)
 np.set_printoptions(linewidth=300)
 
 #import the dataset
-df = pd.read_csv('E:/Users/Faustina Chandra/Documents/3_WHK_LFO_Matthias/Research_ForecastError/Validierung'
-                 '/Clustering/Rohdaten_Gesamtkosten_Rang.csv', delimiter=";", encoding='unicode_escape')
+df = pd.read_csv('../Clustering/Rohdaten_Gesamtkosten_Rang.csv', delimiter=";", encoding='unicode_escape')
 
 #split dataset into features and target (independent and dependent variable)
 y = df['beste_Methode']
