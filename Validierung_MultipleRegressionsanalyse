@@ -1,0 +1,20 @@
+#https://www.w3schools.com/python/python_ml_multiple_regression.asp
+
+import pandas as pd
+df = pd.read_csv('../Analysis of Variance/Test_Results.csv', delimiter=";", encoding='unicode_escape')
+#x: independent variable
+#y: dependent variable
+
+x = df[['Servicegrad', 'Bestellkosten', 'WBZ']]
+y = df['Wagner_Within']
+
+from sklearn import linear_model
+
+regr = linear_model.LinearRegression()
+regr.fit(x, y)
+
+#regression coefficient
+coeff = regr.coef_
+print('coefficient: ', coeff)
+score = regr.score(x, y)
+print('score: ', score)
