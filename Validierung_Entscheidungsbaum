@@ -19,6 +19,7 @@ df = pd.read_csv('../Clustering/Rohdaten_Gesamtkosten_Rang_WW-Groff.csv', delimi
 # *Servicegrad, Prognosefehler, Bestellkosten, WBZ, Label
 # *Die Kommas müssen mit Punkten als Dezimaltrenner ersetzt werden
 # *Die Label enthält nur [0, 1] Binär
+# *Beim Plotten kann man später noch die Label von [0, 1] Entscheidung umbenennen
 
 #split dataset in features and target variables
 feature_cols = ['Servicegrad', 'Prognosefehler', 'Bestellkosten', 'WBZ']
