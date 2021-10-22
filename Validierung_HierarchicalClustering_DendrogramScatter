@@ -13,6 +13,9 @@ import matplotlib.pyplot as plt
 
 data = pd.read_csv('../Clustering/Rohdaten_Gesamtkosten_Rang - Kopie (3).csv', delimiter=';')
 print(data.head())
+#von .csv-Datei benötigten Spalten:
+# *Servicegrad, Prognosefehler, Bestellkosten, WBZ, Optimal Wagner_Within, Silver_Meal, Groff, Least_Unit_Cost, Part_Periode, Wagner_Within
+# *die Kommas müssen mit Punkten als Dezimaltrenner ersetzt werden
 
 #see more columns
 pd.set_option('display.max_rows', 500)
