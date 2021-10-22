@@ -15,6 +15,10 @@ from sklearn.model_selection import train_test_split # Import train_test_split f
 from sklearn import metrics #Import scikit-learn metrics module for accuracy calculation
 
 df = pd.read_csv('../Clustering/Rohdaten_Gesamtkosten_Rang_WW-Groff.csv', delimiter=";", encoding='unicode_escape')
+#von .csv-Datei benötigter Spalten:
+# *Servicegrad, Prognosefehler, Bestellkosten, WBZ, Label
+# *Die Kommas müssen mit Punkten als Dezimaltrenner ersetzt werden
+# *Die Label enthält nur [0, 1] Binär
 
 #split dataset in features and target variables
 feature_cols = ['Servicegrad', 'Prognosefehler', 'Bestellkosten', 'WBZ']
