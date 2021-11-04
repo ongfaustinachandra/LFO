@@ -1,0 +1,74 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Nov  2 19:12:03 2021
+
+@author: Faustina Chandra
+"""
+
+import numpy as np
+import pandas as pd
+
+# Generating Data
+df = pd.read_csv('Rohdaten_Gesamtkosten_Rang_LUCPP_Sporadisch.csv', delimiter=(';'))
+features, targets = [], []
+
+for i in range(8803):
+    features.append([df['Servicegrad'][i], df['Prognosefehler'][i], df['Bestellkosten'][i], df['WBZ'][i]])
+    targets.append(df['Label'][i])
+
+features = np.asarray(features)
+targets = np.asarray(targets)
+#print(features)
+#print(targets)
+
+# === CatBoost for CLASSIFICATION ===
+print('=== CatBoost for Classification ===')
+from numpy import mean
+from numpy import std
+from sklearn.datasets import make_classification
+from catboost import CatBoostClassifier
+from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import RepeatedStratifiedKFold
+from matplotlib import pyplot
+# define dataset
+#X, y = make_classification(n_samples=1000, n_features=10, n_informative=5, \
+#                           n_redundant=5, random_state=1)
+# evaluate the model
+model = CatBoostClassifier(verbose=0, n_estimators=100)
+cv = RepeatedStratifiedKFold(n_splits=10, n_repeats=3, random_state=1)
+n_scores = cross_val_score(model, features, targets, scoring='accuracy', cv=cv, \
+                           n_jobs=-1, error_score='raise')
+print('Accuracy: %.3f (%.3f)' % (mean(n_scores), std(n_scores)))
+# fit the model on the whole dataset
+model = CatBoostClassifier(verbose=0, n_estimators=100)
+model.fit(features, targets)
+# make a single prediction
+row = [[9, 6, 250, 2]]
+yhat = model.predict(row)
+print('Prediction: %d' % yhat[0])
+
+# === CatBoost for REGRESSION ===
+print('=== CatBoost for Regression ===')
+from numpy import mean
+from numpy import std
+from sklearn.datasets import make_regression
+from catboost import CatBoostRegressor
+from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import RepeatedKFold
+from matplotlib import pyplot
+# define dataset
+#X, y = make_regression(n_samples=1000, n_features=10, n_informative=5, \
+#                       random_state=1)
+# evaluate the model
+model = CatBoostRegressor(verbose=0, n_estimators=100)
+cv = RepeatedKFold(n_splits=10, n_repeats=3, random_state=1)
+n_scores = cross_val_score(model, features, targets, scoring='neg_mean_absolute_error', \
+                           cv=cv, n_jobs=-1, error_score='raise')
+print('MAE: %.3f (%.3f)' % (mean(n_scores), std(n_scores)))
+# fit the model on the whole dataset
+model = CatBoostRegressor(verbose=0, n_estimators=100)
+model.fit(features, targets)
+# make a single prediction
+row = [[9, 6, 250, 2]]
+yhat = model.predict(row)
+print('Prediction: %.3f' % yhat[0])
