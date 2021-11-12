@@ -1,0 +1,56 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Nov 10 21:44:07 2021
+
+@author: Faustina Chandra
+"""
+
+import numpy as np
+import pandas as pd
+from numpy import array
+
+# Generating Data
+df = pd.read_csv('Gesamtkosten_mittelwert_Categorical.csv', delimiter=(';'))
+features, targets = [], []
+
+# Encode DGP to Value
+from sklearn.preprocessing import LabelEncoder
+dgp = df['DGP']
+values = array(dgp)
+print(values)
+# integer encode
+label_encoder = LabelEncoder()
+dgp_encoded = label_encoder.fit_transform(values)
+print(dgp_encoded)
+
+# Appending data
+for i in range(len(dgp_encoded)-1):
+    features.append([dgp_encoded[i], df['Servicegrad'][i], df['Prognosefehler'][i],\
+                     df['Bestellkosten'][i], df['WBZ'][i]])
+    targets.append(df['Beste_Methode'][i])
+
+features = np.asarray(features)
+targets = np.asarray(targets)
+
+
+# === CatBoost for CLASSIFICATION ===
+print('=== CatBoost for Classification ===')
+from numpy import mean
+from numpy import std
+from catboost import CatBoostClassifier
+from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import RepeatedStratifiedKFold
+
+model = CatBoostClassifier(verbose=0, n_estimators=100, one_hot_max_size=8)
+cv = RepeatedStratifiedKFold(n_splits=10, n_repeats=1, random_state=1)
+n_scores = cross_val_score(model, features, targets, scoring='accuracy', cv=cv, \
+                           n_jobs=-1, error_score='raise')
+print('Accuracy: %.3f (%.3f)' % (mean(n_scores), std(n_scores)))
+# fit the model on the whole dataset
+model = CatBoostClassifier(verbose=0, n_estimators=100, one_hot_max_size=8)
+model.fit(features, targets)
+# make a single prediction
+#[[DGP, Servicegrad, Prognosefehler, Bestellkosten, WBZ]]
+row = [[2, 4, 1, 250, 14]]
+yhat = model.predict(row)
+print('Prediction:', yhat[0])
