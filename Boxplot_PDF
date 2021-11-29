@@ -1,0 +1,73 @@
+import matplotlib.pyplot as plt
+import pandas as pd
+import datetime as dt
+from matplotlib.backends.backend_pdf import PdfPages
+
+# read CSV
+data = pd.read_csv('Rohdaten_Gesamtkosten_Rang.csv', delimiter=';', decimal=',')
+print(data)
+
+# define rows
+row_start = 0
+row_end = 30
+
+SilverMeal = data['Silver_Meal'][row_start:row_end]
+Groff = data['Groff'][row_start:row_end]
+Least_Unit_Cost = data['Least_Unit_Cost'][row_start:row_end]
+Part_Period = data['Part_Period'][row_start:row_end]
+Wagner_Within = data['Wagner_Within'][row_start:row_end]
+
+data = [SilverMeal, Groff, Least_Unit_Cost, Part_Period, Wagner_Within]
+
+
+# ====== Plotting =======
+
+# first page
+fig1, ax1 = plt.subplots(2, 2, figsize=(15, 15))
+
+ax1[0, 0].boxplot(data)
+ax1[0, 0].set_title('Boxplot 1')
+ax1[0, 0].set_xticklabels(['SM', 'Groff', 'LUC', 'PP', 'WW'])
+
+ax1[0, 1].boxplot(data)
+ax1[0, 1].set_title('Boxplot 2')
+ax1[0, 1].set_xticklabels(['SM', 'Groff', 'LUC', 'PP', 'WW'])
+
+ax1[1, 0].boxplot(data)
+ax1[1, 0].set_title('Boxplot 3')
+ax1[1, 0].set_xticklabels(['SM', 'Groff', 'LUC', 'PP', 'WW'])
+
+ax1[1, 1].boxplot(data)
+ax1[1, 1].set_title('Boxplot 4')
+ax1[1, 1].set_xticklabels(['SM', 'Groff', 'LUC', 'PP', 'WW'])
+
+# second page
+fig2, ax2 = plt.subplots(2, 2, figsize=(15, 15))
+
+ax2[0, 0].boxplot(data)
+ax2[0, 0].set_title('Boxplot 5')
+ax2[0, 0].set_xticklabels(['SM', 'Groff', 'LUC', 'PP', 'WW'])
+
+ax2[0, 1].boxplot(data)
+ax2[0, 1].set_title('Boxplot 6')
+ax2[0, 1].set_xticklabels(['SM', 'Groff', 'LUC', 'PP', 'WW'])
+
+ax2[1, 0].boxplot(data)
+ax2[1, 0].set_title('Boxplot 7')
+ax2[1, 0].set_xticklabels(['SM', 'Groff', 'LUC', 'PP', 'WW'])
+
+ax2[1, 1].boxplot(data)
+ax2[1, 1].set_title('Boxplot 8')
+ax2[1, 1].set_xticklabels(['SM', 'Groff', 'LUC', 'PP', 'WW'])
+
+#save plot
+datenow = dt.datetime.now().strftime('%Y%m%d_%H%M%S')
+
+pdf = PdfPages(datenow + '_Boxplot.pdf')
+pdf.savefig(fig1)
+pdf.savefig(fig2)
+pdf.close()
+
+
+# show plot
+plt.show()
