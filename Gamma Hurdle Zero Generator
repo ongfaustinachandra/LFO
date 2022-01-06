@@ -1,0 +1,87 @@
+# https://seananderson.ca/2014/05/18/gamma-hurdle/
+
+# Import Bibliothek
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Binomial Distribution
+num_samples = 100
+size = 1
+mean = 0.7
+
+# prob = size/(size + mean)
+x = list(range(1, num_samples + 1))
+y = np.random.binomial(size, mean, num_samples)
+# print(x)
+# print(y)
+# print(y.mean())
+
+# Gamma Distribution
+alpha = 19000
+beta = 1
+y_gamma = np.random.gamma(shape=alpha, size=num_samples)
+
+# Multiplying Binomial and Gamma
+y = np.multiply(y, y_gamma)
+# print(y)
+
+# Adding Non Zero Column
+nonZero = []
+for i in range(num_samples):
+    if y[i] > 0:
+        nonZero.append(1)
+    else:
+        nonZero.append(0)
+# print(nonZero)
+
+# Construct Data Frame
+df = pd.DataFrame(np.array(y), columns=['y'])
+df['non_zero'] = nonZero
+print(df.head())
+
+# Plotting Scatter
+plt.plot(x, y, 'o', color='blue')
+plt.show()
+
+# Fitting in Generalized Linear Model
+
+import statsmodels.api as sm
+from statsmodels.formula.api import glm
+
+# fitting in Binomial Distribution for (0/1) values
+link_function_logit = sm.families.links.logit()
+model_families_bin = sm.families.Binomial(link=link_function_logit)
+pBin = glm(formula='nonZero ~ 1', data = df, family=model_families_bin).fit()
+# print(pBin.summary())
+# print(pBin.conf_int())
+
+# fitting in Gamma Distribution for non zero values
+link_function_log = sm.families.links.log()
+model_families_gam = sm.families.Gamma(link=link_function_log)
+dataGam = df[df.non_zero == 1]
+# print(dataGam['non_zero'])
+pGamma = glm(formula='y ~ 1',data= dataGam, family=model_families_gam).fit()
+# print(pGamma.summary())
+# print(pGamma.conf_int())
+
+# Predict the percent of zeros and mean value of non zero data
+from scipy.stats import logistic
+
+pBin_summary =  pd.read_html(pBin.summary().tables[1].as_html(),header=0,index_col=0)[0]
+interceptBin = pBin_summary['coef'].values[0]
+# interceptBin = pBin.params
+coefBinomial = logistic.cdf(interceptBin)
+print('Percent of non zero value: ', round(coefBinomial, 2))
+
+pGamma_summary =  pd.read_html(pGamma.summary().tables[1].as_html(),header=0,index_col=0)[0]
+interceptGam = pGamma_summary['coef'].values[0]
+# interceptGam = pGamma.params
+coefGamma = np.exp(interceptGam)
+print('Mean value of non zero data: ', round(coefGamma, 2))
+
+# Calculating variance and Conf Interval?
+import math as m
+
+coeff = np.exp(m.log(coefBinomial) + m.log(coefGamma))
+print('Coeff: ', coeff)
