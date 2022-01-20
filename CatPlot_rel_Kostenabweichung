@@ -28,11 +28,17 @@ plt.show()
 # ==04==
 g = sns.catplot(x='Methode', y='Werte',
                 hue='Prognosefehler', kind='box',
-                col='Servicegrad' ,data=kostenabw)
+                col='Bestellkosten' ,data=kostenabw)
 plt.show()
 
 # ==05==
 g = sns.catplot(x='Methode', y='Werte',
                 hue='Servicegrad', kind='box',
                 col='Prognosefehler' ,data=kostenabw)
+plt.show()
+
+# ==06==
+g = sns.boxplot(x='Methode', y='Werte',
+                hue='Prognosefehler',
+                data=kostenabw, showmeans=True)
 plt.show()
