@@ -1,0 +1,38 @@
+import seaborn as sns
+import matplotlib.pyplot as plt
+import pandas as pd
+
+# ==Exercise==
+# exercise = sns.load_dataset("exercise")
+kostenabw = pd.read_csv('rel_Kostenabw_bis300_Catplot.csv', delimiter=';', decimal=',')
+print(kostenabw.head(15))
+
+# ==01==
+g = sns.catplot(x='Methode', y='Werte',
+                hue='Servicegrad',
+                data=kostenabw)
+plt.show()
+
+# ==02==
+g = sns.catplot(x='Methode', y='Werte',
+                hue='Servicegrad', kind='box',
+                data=kostenabw)
+plt.show()
+
+# ==03==
+g = sns.catplot(x='Methode', y='Werte',
+                hue='Prognosefehler', kind='box',
+                data=kostenabw)
+plt.show()
+
+# ==04==
+g = sns.catplot(x='Methode', y='Werte',
+                hue='Prognosefehler', kind='box',
+                col='Servicegrad' ,data=kostenabw)
+plt.show()
+
+# ==05==
+g = sns.catplot(x='Methode', y='Werte',
+                hue='Servicegrad', kind='box',
+                col='Prognosefehler' ,data=kostenabw)
+plt.show()
