@@ -1,0 +1,26 @@
+import numpy as np
+import pandas as pd
+import plotly.express as px
+import plotly.io as pio
+import matplotlib.pyplot as plt
+
+""" == Bestellkosten x Prognosefehler x Rang der ausgewählten Methode 
+        für alle DGP == """
+
+# kostenabw = pd.read_csv('Gesamtkosten1_mitRang.csv', delimiter=';', decimal=',')
+kostenabw = pd.read_csv('Gesamtkosten1_Mittelwert_mitRang.csv', delimiter=';', decimal=',')
+print(kostenabw.head(15))
+
+x = kostenabw['Prognosefehler']
+y = kostenabw['Bestellkosten']
+z = kostenabw['DGP']
+besteMethode = kostenabw['Methode']
+
+fig = px.scatter_3d(kostenabw, x=x, y=y, z=z, color=besteMethode,
+                 width=1500, height=1200,
+                 title="3D Scatter Plot")
+# png_renderer = pio.renderers['png']
+# fig.show(renderer='svg', width=800, height=300)
+# fig.show(renderer='png')
+pio.show(fig)
+fig.show()
